@@ -17,11 +17,13 @@ import {
   Sparkles,
   Calendar,
   Package,
+  ShieldCheck,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { ProductTile } from "@/components/product-tile";
 
 const fadeUp = {
   initial: { opacity: 0, y: 12 },
@@ -141,12 +143,12 @@ export default function RetailerHome() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {featuredProducts?.slice(0, 8).map((p) => (
               <div key={p.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-[#003087]/30 hover:shadow-lg hover:shadow-slate-900/5 transition-all group" data-testid={`featured-product-${p.id}`}>
-                <div className="aspect-square bg-slate-50 overflow-hidden">
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBag className="w-12 h-12 text-slate-300" />
+                <div className="aspect-square relative">
+                  <ProductTile productId={p.id} category={p.category} size="md" />
+                  {p.exchange_eligible && (
+                    <div className="absolute top-2 left-2 bg-[#FFD700] text-[#003087] text-[10px] font-bold px-2 py-1 rounded-md inline-flex items-center gap-1 shadow-sm" data-testid={`featured-exchange-${p.id}`}>
+                      <ShieldCheck className="w-3 h-3" />
+                      60-day exchange
                     </div>
                   )}
                 </div>
@@ -169,7 +171,7 @@ export default function RetailerHome() {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                  <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md" data-testid={`featured-margin-${p.id}`}>
                     <TrendingUp className="w-3 h-3" /> {p.margin_percent}% margin
                   </div>
                 </div>

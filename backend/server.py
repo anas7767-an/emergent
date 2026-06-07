@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
 
-from seed_data import SEED_USERS, SEED_PRODUCTS, SEED_ORDERS_SPEC
+from seed_data import SEED_USERS, SEED_PRODUCTS, SEED_ORDERS_SPEC, SEED_VERSION
 
 
 # ---------------------------------------------------------------------------
@@ -695,6 +695,18 @@ async def seed_users():
 
 
 async def seed_products():
+    # Check seed version; if mismatch, wipe products + sample orders for a clean re-seed.
+    marker = await db.meta.find_one({"_id": "seed_version"})
+    current = marker.get("value") if marker else None
+    if current != SEED_VERSION:
+        logger.info(f"Seed version changed ({current} → {SEED_VERSION}); resetting products + sample orders.")
+        await db.products.delete_many({})
+        await db.orders.delete_many({})
+        await db.credit_entries.delete_many({})
+        await db.credits.delete_many({})
+        await db.counters.delete_many({"_id": {"$in": ["products", "orders", "credit_entries"]}})
+        await db.meta.update_one({"_id": "seed_version"}, {"$set": {"value": SEED_VERSION}}, upsert=True)
+
     if await db.products.count_documents({}) > 0:
         return
     # Map brand_name → brand_id

@@ -10,19 +10,22 @@ import {
   Plus,
   ShieldCheck,
   TrendingUp,
-  ShoppingBag,
   PackageSearch,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { ProductTile } from "@/components/product-tile";
 
 const CATEGORIES = [
   { key: "all", label: "All" },
-  { key: "FMCG", label: "FMCG" },
   { key: "Snacks", label: "Snacks" },
+  { key: "Biscuits", label: "Biscuits" },
+  { key: "Noodles", label: "Noodles" },
+  { key: "Staples", label: "Staples" },
+  { key: "Detergent", label: "Detergent" },
+  { key: "Beverages", label: "Beverages" },
+  { key: "Candy", label: "Candy" },
   { key: "Spices", label: "Spices" },
-  { key: "Local Products", label: "Local" },
-  { key: "D2C", label: "D2C" },
 ];
 
 export default function RetailerProducts() {
@@ -127,22 +130,16 @@ export default function RetailerProducts() {
                 className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-[#003087]/30 hover:shadow-lg hover:shadow-slate-900/5 transition-all group flex flex-col"
                 data-testid={`product-card-${p.id}`}
               >
-                <div className="aspect-square bg-slate-50 relative overflow-hidden">
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBag className="w-12 h-12 text-slate-300" />
-                    </div>
-                  )}
+                <div className="aspect-square relative overflow-hidden">
+                  <ProductTile productId={p.id} category={p.category} size="md" />
                   {p.exchange_eligible && (
-                    <div className="absolute top-2 left-2 bg-white/95 backdrop-blur text-[10px] font-bold text-emerald-700 px-2 py-1 rounded-md border border-emerald-200 flex items-center gap-1">
+                    <div className="absolute top-2 left-2 bg-[#FFD700] text-[#003087] text-[10px] font-bold px-2 py-1 rounded-md inline-flex items-center gap-1 shadow-sm" data-testid={`exchange-badge-${p.id}`}>
                       <ShieldCheck className="w-3 h-3" />
                       60-day exchange
                     </div>
                   )}
-                  <div className="absolute top-2 right-2 bg-[#FFD700] text-[#003087] text-[10px] font-bold px-2 py-1 rounded-md">
-                    {p.margin_percent}% margin
+                  <div className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 border border-emerald-300 text-[10px] font-bold px-2 py-1 rounded-md inline-flex items-center gap-1 shadow-sm" data-testid={`margin-badge-${p.id}`}>
+                    <TrendingUp className="w-3 h-3" /> {p.margin_percent}%
                   </div>
                 </div>
                 <div className="p-3 sm:p-4 flex flex-col flex-1">

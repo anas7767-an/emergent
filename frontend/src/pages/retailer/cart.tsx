@@ -5,6 +5,7 @@ import { Link, useLocation } from "wouter";
 import { useCreateOrder, OrderInputPaymentType } from "@workspace/api-client-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ProductTile } from "@/components/product-tile";
 
 const PAYMENT_OPTIONS = [
   { id: "pay_now", label: "Pay now", sub: "UPI / Bank transfer", icon: "₹", highlight: false },
@@ -75,14 +76,8 @@ export default function RetailerCart() {
         <div className="lg:col-span-2 space-y-3" data-testid="cart-items-list">
           {cart.map((item) => (
             <div key={item.product.id} className="bg-white rounded-2xl border border-slate-200 p-4 flex gap-4" data-testid={`cart-item-${item.product.id}`}>
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-50 overflow-hidden shrink-0">
-                {item.product.image_url ? (
-                  <img src={item.product.image_url} alt={item.product.name} className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ShoppingBag className="w-8 h-8 text-slate-300" />
-                  </div>
-                )}
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden shrink-0">
+                <ProductTile productId={item.product.id} category={item.product.category} size="sm" />
               </div>
               <div className="flex-1 min-w-0 flex flex-col">
                 <div className="flex justify-between gap-3">
