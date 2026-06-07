@@ -1,0 +1,95 @@
+{
+  "theme": "light",
+  "archetype": "Organic & Earthy + Swiss & High-Contrast (Indian B2B Trust)",
+  "colors": {
+    "light": {
+      "background": "#FDFDFD",
+      "foreground": "#0A0A0A",
+      "primary": "#003087",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#FFD700",
+      "secondary_foreground": "#0A0A0A",
+      "accent": "#FF9933",
+      "accent_foreground": "#FFFFFF",
+      "muted": "#F3F4F6",
+      "muted_foreground": "#64748B",
+      "border": "#E2E8F0"
+    },
+    "dark": {
+      "background": "#020617",
+      "foreground": "#F8FAFC",
+      "primary": "#3B82F6",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#FFD700",
+      "secondary_foreground": "#0A0A0A",
+      "accent": "#FF9933",
+      "accent_foreground": "#FFFFFF",
+      "muted": "#1E293B",
+      "muted_foreground": "#94A3B8",
+      "border": "#1E293B"
+    }
+  },
+  "typography": {
+    "heading_font": "Bricolage Grotesque, sans-serif",
+    "body_font": "Plus Jakarta Sans, sans-serif",
+    "rules": {
+      "h1": "text-5xl lg:text-6xl font-extrabold tracking-tight",
+      "h2": "text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3": "text-xl lg:text-2xl font-semibold",
+      "body": "text-base leading-relaxed text-slate-700",
+      "labels": "text-sm font-medium uppercase tracking-widest text-slate-500"
+    }
+  },
+  "layout_and_spacing": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "section_padding": "py-20 lg:py-32",
+    "grid_system": "Use Tetris Grid (Mode A) for Features; Standard 12-col for Hero.",
+    "border_radius": "rounded-2xl for major cards, rounded-xl for buttons",
+    "shadows": "shadow-sm for cards, shadow-md on hover"
+  },
+  "sections_instructions": {
+    "navbar": "Sticky at top, z-50. bg-white/90 backdrop-blur-md border-b border-slate-100. Navy text for links. Gold/Navy primary CTA.",
+    "hero": "Asymmetric split layout. Left: Large H1 'India\\'s Retail Supply Engine' (Navy), H2/Subtitle (Slate 600). Two CTAs ('I am a Retailer' - Navy, 'I am a Brand' - Outline). Right: Overlapping imagery of Indian shopkeeper & grocery shelves using provided URLs. Add a floating glassmorphism '60 Days Credit' badge.",
+    "stats_strip": "Full-width section, bg-white, border-y border-slate-200. 4-col grid on desktop. Big numbers in Navy, labels in Slate 500 uppercase.",
+    "how_it_works": "Editorial Ribbon style. 3 steps. Lots of negative space (gap-24). Large step numbers (opacity-10). Clean white cards with subtle shadow.",
+    "features_grid": "Bento Grid (Mode A: Tetris style). Grid-cols-1 md:grid-cols-12 gap-8. Cards: bg-white border border-slate-100. 4 features: Curated Catalog, Instant Credit, 60-Day Exchange, Fast Delivery.",
+    "for_brands_cta": "Color inversion. bg-[#003087] (Navy) text-white. High contrast. Large heading. Accent button in Gold (#FFD700) text-black.",
+    "footer": "Simple, clean footer. bg-white border-t border-slate-200. Left: Logo, description. Right: Links, Contact (anas983shaikh@gmail.com)."
+  },
+  "motion_and_interactions": {
+    "hover": "Cards: -translate-y-1 shadow-lg transition-all duration-300. Buttons: bg-opacity-90 scale-[1.02].",
+    "entrance": "Staggered fade-up for grid items using Framer Motion (initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}}).",
+    "test_ids": "Mandatory data-testid attributes for all CTAs (e.g., 'retailer-cta-button', 'brand-cta-button')."
+  },
+  "media": [
+    {
+      "category": "hero_main",
+      "url": "https://images.unsplash.com/photo-1747246680560-b4a84a925603?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODF8MHwxfHNlYXJjaHwyfHxpbmRpYW4lMjBzaG9wa2VlcGVyfGVufDB8fHx8MTc4MDgwODcxN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Indian shopkeeper writing at desk, representing Kirana owner."
+    },
+    {
+      "category": "hero_overlap",
+      "url": "https://images.pexels.com/photos/26861411/pexels-photo-26861411.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Bustling Indian grocery store filled with products."
+    },
+    {
+      "category": "feature_shelves",
+      "url": "https://images.unsplash.com/photo-1670684684445-a4504dca0bbc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwxfHxncm9jZXJ5JTIwc3RvcmUlMjBzaGVsdmVzfGVufDB8fHx8MTc4MDgwODcxN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Grocery store aisle filled with food."
+    },
+    {
+      "category": "feature_delivery",
+      "url": "https://images.pexels.com/photos/6169046/pexels-photo-6169046.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Delivery person carrying cardboard boxes outside."
+    }
+  ],
+  "do_not_do_list": [
+    "DO NOT use full blue background gradients.",
+    "DO NOT use standard equal-square 3-column card layouts for features (use Bento/Tetris instead).",
+    "DO NOT use 'Inter' for headings. Stick to Bricolage Grotesque.",
+    "DO NOT make the hero image a full-bleed dark overlay. Let it sit in a white space context as a cut-out or cleanly framed asset.",
+    "DO NOT forget data-testid on buttons.",
+    "DO NOT use placeholder images from dummy services."
+  ],
+  "instructions_to_main_agent": "Ensure tailwind.config.js is updated to extend colors and fonts. Import Bricolage Grotesque and Plus Jakarta Sans from Google Fonts. Build only the landing page with these precise stylistic rules."
+}

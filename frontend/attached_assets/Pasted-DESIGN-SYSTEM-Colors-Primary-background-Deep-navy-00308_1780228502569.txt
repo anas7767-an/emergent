@@ -1,0 +1,318 @@
+DESIGN SYSTEM
+Colors:
+
+Primary background: Deep navy #003087
+Secondary background: #001a4d
+Accent: Golden yellow #FFD700
+Success: #00c853
+Text primary: #ffffff
+Text secondary: #b0bec5
+Card background: #0a1f5c
+Border: #1a3a7a
+
+Typography:
+
+Headings: Poppins Bold
+Body: Inter Regular
+Numbers/Stats: Orbitron
+
+Style:
+
+Professional B2B feel — like Flipkart Wholesale / Best Price
+Clean cards with subtle gold borders
+Mobile first — most kiranas use phones
+Fast loading — optimized for slow internet
+
+
+PAGE 1 — LANDING PAGE
+Navbar:
+
+Logo: Shopping cart icon + "FERI" bold white + "Wholesale" small yellow
+Links: Home, Products, How it Works, Contact
+Buttons: "Login" outline + "Register Free" yellow filled
+
+Hero Section:
+
+Headline: "India's Retail Supply Engine"
+Subheadline: "Discover brands, order instantly, get credit — all in one platform"
+Two CTA buttons: "I am a Retailer" and "I am a Brand"
+Background: Dark navy with subtle hexagonal pattern
+Stats bar below hero:
+
+130+ Active Retailers
+₹15L+ Revenue Processed
+2 Cities
+60-Day Exchange Guarantee
+
+
+
+How It Works Section:
+
+3 steps with icons:
+
+Step 1: Register & KYC — "Complete one-time KYC in 2 minutes"
+Step 2: Browse & Order — "Discover 100s of products at wholesale rates"
+Step 3: Credit & Grow — "Get Net-15/30/60 credit — one click"
+
+
+
+Features Section:
+
+4 feature cards:
+
+🛒 Curated Catalog — FMCG + Local Brands + D2C
+💳 Instant Credit — NBFC-powered working capital
+🔄 60-Day Exchange — No returns, just exchange
+🚚 Fast Delivery — Same day or next day
+
+
+
+For Brands Section:
+
+"Are you a brand? Get distribution without a sales team"
+CTA: "List Your Products"
+
+Footer:
+
+Logo
+Links
+Contact: anas983shaikh@gmail.com
+"© 2025 Feri. India's Retail Supply Engine."
+
+
+PAGE 2 — AUTHENTICATION
+Register Page — Kirana Owner:
+
+Shop name
+Owner name
+Phone number
+City — dropdown: Malegaon, Nashik, Pune, Mumbai, Other
+Password
+"Register as Retailer" button — yellow
+
+Register Page — Brand/Manufacturer:
+
+Brand name
+Contact person
+Phone
+Product category — dropdown: FMCG, Snacks, Spices, Local Products, D2C
+Password
+"Register as Brand" button
+
+Login Page:
+
+Phone number
+Password
+Forgot password
+Role selector: Retailer / Brand / Admin
+Login button
+
+
+PAGE 3 — KIRANA DASHBOARD
+Header:
+
+Feri logo
+Notification bell
+Profile — shop name
+Credit balance indicator — golden badge "Credit: ₹XXXX available"
+
+Home Tab:
+
+Welcome: "Namaste, [Shop Name]!"
+3 stat cards:
+
+Total Orders
+Pending Deliveries
+Available Credit
+
+
+Featured products horizontal scroll
+New arrivals section
+Quick reorder — last 3 orders
+
+Products Tab:
+
+Search bar
+Category filter: All, FMCG, Snacks, Spices, Local Brands, D2C
+Sort by: Popular, New, Price Low-High, Margin High-Low
+Product cards showing:
+
+Product image
+Name
+MRP vs Wholesale price
+Margin % — green badge
+"60-Day Exchange" badge — gold
+Add to cart button
+Minimum order quantity
+
+
+
+Cart:
+
+Products list with quantity controls
+Subtotal
+Payment method selector:
+
+Pay Now — UPI
+Net-15 — "Pay in 15 days"
+Net-30 — "Pay in 30 days"
+Net-60 — "Pay in 60 days — 60-Day Exchange eligible"
+
+
+Place Order button — yellow
+
+My Orders Tab:
+
+Order list with status badges:
+
+Pending — yellow
+Confirmed — blue
+Delivered — green
+Exchange Requested — orange
+
+
+Order detail view:
+
+Products ordered
+Amount
+Delivery date
+"Request Exchange" button — for Net-60 orders
+
+
+
+Credit Tab:
+
+Available credit limit
+Credit history table
+Payment due dates
+"Request Credit Increase" button
+
+Profile Tab:
+
+Shop details
+KYC status — Verified green badge
+Edit profile
+Logout
+
+
+PAGE 4 — BRAND/MANUFACTURER DASHBOARD
+Home:
+
+Total products listed
+Total orders received
+Revenue this month
+Top selling product
+
+My Products Tab:
+
+List of listed products
+Add new product button:
+
+Product name
+Category
+MRP
+Wholesale price
+MOQ — minimum order quantity
+Description
+Product image upload
+Exchange eligible — yes/no toggle
+
+
+Edit/delete options
+
+Orders Tab:
+
+Orders received for their products
+Status tracking
+Revenue per order
+
+Analytics Tab:
+
+Which cities ordering most
+Which products selling best
+Return/exchange rate
+
+
+PAGE 5 — ADMIN DASHBOARD
+Login: Username: admin / Password: feri@2025
+Overview:
+
+6 stat cards:
+
+Total Retailers
+Total Orders Today
+Revenue Today
+Active Credits
+Pending Exchanges
+New Registrations
+
+
+
+Orders Management:
+
+All orders table
+Filter: date, city, status, payment type
+Update status: Confirmed → Dispatched → Delivered
+Export CSV
+
+Retailers Management:
+
+All registered kiranas
+KYC verification status
+Credit limit management
+Approve/reject KYC
+
+Brands Management:
+
+All registered brands
+Approve/reject product listings
+View brand analytics
+
+Credit Management:
+
+All active credit accounts
+Payment due dates
+Overdue alerts — red
+Approve credit increase requests
+
+Exchange Management:
+
+All exchange requests
+Approve/reject exchanges
+Assign replacement products
+
+Analytics:
+
+Revenue chart — monthly
+City-wise performance
+Top products
+Top retailers
+
+
+DATABASE STRUCTURE
+Users: id, name, phone, role, city, kyc_status, credit_limit, created_at
+Products: id, name, category, mrp, wholesale_price, margin_percent, brand_id, exchange_eligible, stock_status
+Orders: id, retailer_id, products, total_amount, payment_type, status, delivery_date, created_at
+Credits: id, retailer_id, amount, due_date, status, created_at
+Exchanges: id, order_id, retailer_id, reason, status, replacement_product_id
+
+TECHNICAL REQUIREMENTS
+
+React.js frontend
+Node.js + Express backend
+Firebase or MongoDB database
+Mobile responsive — all pages
+Real-time order status updates
+Secure login — JWT tokens
+All amounts in ₹ Indian Rupees
+Fast loading — lazy loading images
+Error handling — friendly messages
+
+
+IMPORTANT
+
+Every button must work — no dummy buttons
+Show loading states
+Empty states — "No orders yet"
+Success messages after actions
+Mobile first — test on 375px width
