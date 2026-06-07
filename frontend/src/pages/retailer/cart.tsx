@@ -1,14 +1,17 @@
 import { useCart } from "@/contexts/cart-context";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Minus, Plus, Trash2, ShoppingBag, CreditCard } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, CreditCard, ArrowRight, ShieldCheck } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useCreateOrder } from "@workspace/api-client-react";
+import { useCreateOrder, OrderInputPaymentType } from "@workspace/api-client-react";
 import { useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { OrderInputPaymentType } from "@workspace/api-client-react";
+
+const PAYMENT_OPTIONS = [
+  { id: "pay_now", label: "Pay now", sub: "UPI / Bank transfer", icon: "₹", highlight: false },
+  { id: "net_15", label: "Net-15 days", sub: "Pay in 15 days", icon: "15", highlight: false },
+  { id: "net_30", label: "Net-30 days", sub: "Pay in 30 days", icon: "30", highlight: false },
+  { id: "net_60", label: "Net-60 days", sub: "Includes 60-day exchange", icon: "60", highlight: true },
+] as const;
 
 export default function RetailerCart() {
   const { cart, updateQuantity, removeFromCart, totalAmount, clearCart } = useCart();
@@ -19,164 +22,199 @@ export default function RetailerCart() {
 
   const handleCheckout = () => {
     if (cart.length === 0) return;
-
-    createOrder.mutate({
-      data: {
-        items: cart.map(item => ({
-          product_id: item.product.id,
-          quantity: item.quantity
-        })),
-        payment_type: paymentType
-      }
-    }, {
-      onSuccess: () => {
-        toast({ title: "Order Placed Successfully", description: "Your order has been confirmed." });
-        clearCart();
-        setLocation("/dashboard/retailer/orders");
+    createOrder.mutate(
+      {
+        data: {
+          items: cart.map((i) => ({ product_id: i.product.id, quantity: i.quantity })),
+          payment_type: paymentType,
+        },
       },
-      onError: (err) => {
-        toast({ 
-          title: "Order Failed", 
-          description: err?.data?.error || "Could not place order.",
-          variant: "destructive"
-        });
+      {
+        onSuccess: () => {
+          toast({ title: "Order placed!", description: "Your order has been confirmed." });
+          clearCart();
+          setLocation("/dashboard/retailer/orders");
+        },
+        onError: (err: any) => {
+          toast({
+            title: "Order failed",
+            description: err?.message || "Could not place order",
+            variant: "destructive",
+          });
+        },
       }
-    });
+    );
   };
 
   if (cart.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32">
-        <div className="w-24 h-24 bg-secondary rounded-full flex items-center justify-center mb-6">
-          <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+      <div className="flex flex-col items-center justify-center py-24 text-center" data-testid="empty-cart">
+        <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-slate-400" />
         </div>
-        <h2 className="text-2xl font-bold font-heading mb-2">Your cart is empty</h2>
-        <p className="text-muted-foreground mb-8">Looks like you haven't added anything to your cart yet.</p>
+        <h2 className="font-heading text-2xl font-extrabold text-slate-900 mb-2">Your cart is empty</h2>
+        <p className="text-slate-500 mb-7 max-w-sm">Browse our wholesale catalog and add products to start a new order.</p>
         <Link href="/dashboard/retailer/products">
-          <Button className="font-bold">Browse Products</Button>
+          <Button className="h-12 px-7 bg-[#003087] text-white hover:bg-[#002060] font-bold rounded-xl" data-testid="browse-products-btn">
+            <ShoppingBag className="w-4 h-4 mr-2" /> Browse products
+          </Button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto" data-testid="retailer-cart">
       <div>
-        <h1 className="text-2xl font-bold font-heading">Shopping Cart</h1>
-        <p className="text-muted-foreground">Review your items and checkout.</p>
+        <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Shopping cart</h1>
+        <p className="text-sm text-slate-500">{cart.length} unique products · ₹{totalAmount.toLocaleString("en-IN")} total</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-4">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* ITEMS */}
+        <div className="lg:col-span-2 space-y-3" data-testid="cart-items-list">
           {cart.map((item) => (
-            <Card key={item.product.id} className="bg-card border-card-border/30">
-              <CardContent className="p-4 flex gap-4">
-                <div className="w-20 h-20 bg-secondary rounded flex-shrink-0 flex items-center justify-center">
-                  {item.product.image_url ? (
-                    <img src={item.product.image_url} alt={item.product.name} className="w-full h-full object-contain p-2" />
-                  ) : (
-                    <ShoppingBag className="w-8 h-8 text-muted-foreground/30" />
-                  )}
-                </div>
-                
-                <div className="flex-1 flex flex-col">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-sm line-clamp-2">{item.product.name}</h3>
-                      <p className="text-xs text-muted-foreground">{item.product.brand_name || 'Generic'}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => removeFromCart(item.product.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+            <div key={item.product.id} className="bg-white rounded-2xl border border-slate-200 p-4 flex gap-4" data-testid={`cart-item-${item.product.id}`}>
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-50 overflow-hidden shrink-0">
+                {item.product.image_url ? (
+                  <img src={item.product.image_url} alt={item.product.name} className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <ShoppingBag className="w-8 h-8 text-slate-300" />
                   </div>
-                  
-                  <div className="mt-auto flex justify-between items-end">
-                    <p className="font-bold font-numbers text-primary">₹{item.product.wholesale_price}</p>
-                    
-                    <div className="flex items-center gap-1 bg-secondary rounded-lg border border-border p-1">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-6 w-6" 
-                        onClick={() => updateQuantity(item.product.id, Math.max(item.product.moq || 1, item.quantity - 1))}
-                        disabled={item.quantity <= (item.product.moq || 1)}
-                      >
-                        <Minus className="w-3 h-3" />
-                      </Button>
-                      <span className="text-sm font-numbers font-medium w-8 text-center">{item.quantity}</span>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-6 w-6"
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      >
-                        <Plus className="w-3 h-3" />
-                      </Button>
+                )}
+              </div>
+              <div className="flex-1 min-w-0 flex flex-col">
+                <div className="flex justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-slate-400">{item.product.brand_name}</div>
+                    <h3 className="font-semibold text-sm text-slate-900 line-clamp-2 leading-snug">{item.product.name}</h3>
+                  </div>
+                  <button
+                    onClick={() => removeFromCart(item.product.id)}
+                    className="w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center shrink-0"
+                    data-testid={`remove-${item.product.id}`}
+                    aria-label="Remove"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="mt-auto flex items-end justify-between pt-3">
+                  <div>
+                    <div className="font-numbers font-extrabold text-[#003087] text-base">
+                      ₹{(item.product.wholesale_price * item.quantity).toLocaleString("en-IN")}
+                    </div>
+                    <div className="text-[11px] text-slate-500">
+                      ₹{item.product.wholesale_price} × {item.quantity}
                     </div>
                   </div>
+                  <div className="inline-flex items-center bg-slate-100 rounded-xl p-1">
+                    <button
+                      onClick={() => updateQuantity(item.product.id, Math.max(item.product.moq || 1, item.quantity - 1))}
+                      disabled={item.quantity <= (item.product.moq || 1)}
+                      className="w-8 h-8 rounded-lg bg-white text-slate-700 disabled:opacity-40 hover:bg-white shadow-sm flex items-center justify-center"
+                      data-testid={`qty-minus-${item.product.id}`}
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-10 text-center font-numbers font-bold text-sm">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      className="w-8 h-8 rounded-lg bg-white text-slate-700 hover:bg-white shadow-sm flex items-center justify-center"
+                      data-testid={`qty-plus-${item.product.id}`}
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
-        <div className="space-y-6">
-          <Card className="bg-card border-card-border/50 sticky top-24">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-bold mb-4 font-heading border-b border-border pb-4">Order Summary</h3>
-              
-              <div className="space-y-3 mb-6 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Items Total</span>
-                  <span className="font-numbers">₹{totalAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Delivery</span>
-                  <span className="text-success font-medium">Free</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold border-t border-border pt-3 mt-3">
-                  <span>Total Amount</span>
-                  <span className="text-primary font-numbers">₹{totalAmount.toLocaleString('en-IN')}</span>
-                </div>
-              </div>
+        {/* SUMMARY */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 lg:sticky lg:top-32" data-testid="cart-summary">
+            <h3 className="font-heading text-lg font-extrabold text-slate-900 mb-4">Order summary</h3>
 
-              <div className="mb-6">
-                <h4 className="font-medium mb-3 text-sm flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-primary" />
-                  Select Payment Term
-                </h4>
-                <RadioGroup value={paymentType} onValueChange={(v: any) => setPaymentType(v)} className="space-y-2">
-                  <div className="flex items-center space-x-2 border border-border p-3 rounded bg-secondary">
-                    <RadioGroupItem value="pay_now" id="pay_now" />
-                    <Label htmlFor="pay_now" className="flex-1 cursor-pointer">Pay Now (UPI/Bank)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 border border-border p-3 rounded bg-secondary">
-                    <RadioGroupItem value="net_15" id="net_15" />
-                    <Label htmlFor="net_15" className="flex-1 cursor-pointer">Net-15 Days</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 border border-border p-3 rounded bg-secondary">
-                    <RadioGroupItem value="net_30" id="net_30" />
-                    <Label htmlFor="net_30" className="flex-1 cursor-pointer">Net-30 Days</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 border border-primary/50 p-3 rounded bg-primary/5">
-                    <RadioGroupItem value="net_60" id="net_60" />
-                    <Label htmlFor="net_60" className="flex-1 cursor-pointer">
-                      <div className="font-medium text-primary">Net-60 Days</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">Includes 60-Day Exchange Guarantee</div>
-                    </Label>
-                  </div>
-                </RadioGroup>
+            <div className="space-y-2.5 text-sm mb-5">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span className="font-numbers">₹{totalAmount.toLocaleString("en-IN")}</span>
               </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Delivery</span>
+                <span className="font-semibold text-emerald-600">Free</span>
+              </div>
+              <div className="flex justify-between font-bold text-base pt-3 border-t border-slate-100">
+                <span className="text-slate-900">Total</span>
+                <span className="font-numbers text-[#003087] text-xl" data-testid="cart-total">
+                  ₹{totalAmount.toLocaleString("en-IN")}
+                </span>
+              </div>
+            </div>
 
-              <Button 
-                className="w-full font-bold h-12 bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={handleCheckout}
-                disabled={createOrder.isPending}
-              >
-                {createOrder.isPending ? "Processing..." : "Place Order"}
-              </Button>
-            </CardContent>
-          </Card>
+            <div className="mb-5">
+              <div className="text-xs uppercase tracking-widest font-bold text-slate-500 mb-2.5 flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5" /> Payment terms
+              </div>
+              <div className="space-y-2" data-testid="payment-options">
+                {PAYMENT_OPTIONS.map((opt) => {
+                  const active = paymentType === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setPaymentType(opt.id)}
+                      className={`w-full text-left p-3.5 rounded-xl border-2 transition-all flex items-center gap-3 ${
+                        active
+                          ? "border-[#003087] bg-[#003087]/5"
+                          : "border-slate-200 hover:border-slate-300 bg-white"
+                      }`}
+                      data-testid={`payment-${opt.id}`}
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
+                          active ? "bg-[#003087] text-[#FFD700]" : "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {opt.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className={`font-bold text-sm ${active ? "text-[#003087]" : "text-slate-900"}`}>
+                          {opt.label}
+                        </div>
+                        <div className="text-[11px] text-slate-500 flex items-center gap-1">
+                          {opt.highlight && <ShieldCheck className="w-3 h-3 text-emerald-600" />}
+                          {opt.sub}
+                        </div>
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border-2 ${
+                          active ? "border-[#003087] bg-[#003087]" : "border-slate-300"
+                        } flex items-center justify-center`}
+                      >
+                        {active && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <Button
+              onClick={handleCheckout}
+              disabled={createOrder.isPending}
+              className="w-full h-12 bg-[#003087] text-white hover:bg-[#002060] font-bold rounded-xl text-base"
+              data-testid="place-order-btn"
+            >
+              {createOrder.isPending ? "Placing order…" : "Place order"}
+              <ArrowRight className="w-4 h-4 ml-1.5" />
+            </Button>
+            <p className="text-[11px] text-slate-500 text-center mt-3">
+              By placing the order you agree to FERI's terms & return policy.
+            </p>
+          </div>
         </div>
       </div>
     </div>
